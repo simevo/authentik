@@ -83,6 +83,7 @@ email:
   timeout: 10
   from: authentik@localhost
   template_dir: /templates
+  ca_path: ""
 
 throttle:
   providers:

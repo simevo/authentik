@@ -1,12 +1,14 @@
 """email stage models"""
+import ssl
 
 from os import R_OK, access
 from pathlib import Path
 
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
-from django.core.mail.backends.smtp import EmailBackend
+from django.core.mail.backends.smtp import EmailBackend as SMTPBackend
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 from django.views import View
 from rest_framework.serializers import BaseSerializer
@@ -16,6 +18,21 @@ from authentik.flows.models import Stage
 from authentik.lib.config import CONFIG
 
 LOGGER = get_logger()
+
+
+class EmailBackend(SMTPBackend):   
+    @cached_property
+    def ssl_context(self):
+        if self.ssl_certfile or self.ssl_keyfile:
+            ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_CLIENT)
+            # set verify location:
+            if hasattr(settings, 'CA_PATH') and settings.CA_PATH is not None:
+                ssl_context.load_verify_locations(capath=settings.CA_PATH)
+            ssl_context.load_cert_chain(self.ssl_certfile, self.ssl_keyfile)
+            return ssl_context
+        else:
+            ssl_context = ssl.create_default_context()
+            return ssl_context
 
 
 class EmailTemplates(models.TextChoices):

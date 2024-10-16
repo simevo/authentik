@@ -353,6 +353,7 @@ EMAIL_TIMEOUT = CONFIG.get_int("email.timeout")
 DEFAULT_FROM_EMAIL = CONFIG.get("email.from")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_SUBJECT_PREFIX = "[authentik] "
+CA_PATH = CONFIG.get("email.ca_path")
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
